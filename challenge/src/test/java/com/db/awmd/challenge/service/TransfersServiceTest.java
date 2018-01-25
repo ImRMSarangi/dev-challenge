@@ -43,7 +43,7 @@ public class TransfersServiceTest {
 
 	}
 	
-	//@Test
+	@Test
 	public void transferMoney() {
 		Transfer transfer = new Transfer("Id-123", "Id-124", new BigDecimal(500));
 		
@@ -56,7 +56,7 @@ public class TransfersServiceTest {
 		assertThat(accountTo.getBalance()).isEqualByComparingTo(new BigDecimal(2500));
 	}
 	
-	//@Test
+	@Test
 	public void transferMoneyNoAccountFromId() {
 		Transfer transfer = new Transfer();
 		transfer.setAccountToId("Id-124");
@@ -70,7 +70,7 @@ public class TransfersServiceTest {
 		
 	}
 	
-	//@Test
+	@Test
 	public void transferMoneyNoAccountToId() {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId("Id-123");
@@ -84,7 +84,7 @@ public class TransfersServiceTest {
 		
 	}
 	
-	//@Test
+	@Test
 	public void transferMoneyNoAmount() {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId("Id-123");
@@ -98,7 +98,7 @@ public class TransfersServiceTest {
 		
 	}
 	
-	//@Test
+	@Test
 	public void transferMoneySameFromToAccountId() {
 		Transfer transfer = new Transfer();
 		transfer.setAccountFromId("Id-123");
