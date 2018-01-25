@@ -33,7 +33,7 @@ public class TransfersControllerTest {
 	private WebApplicationContext webApplicationContext;
 
 	@Before
-	public void prepareMockMvc() {
+	public void prepareMockMvcAndCreateAccounts() {
 		this.mockMvc = webAppContextSetup(this.webApplicationContext).build();
 		accountsService.getAccountsRepository().clearAccounts();
 		try {
@@ -119,6 +119,14 @@ public class TransfersControllerTest {
 	public void transferMoneyToAccountNotFound() throws Exception {
 		this.mockMvc.perform(post("/v1/transfers").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"accountFromId\":\"Id-123\",\"accountToId\":\"Id-129\",\"amount\":500}")).andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void transferMoneyInsufficientBalance() throws Exception {
+		this.mockMvc
+				.perform(post("/v1/transfers").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"accountFromId\":\"Id-123\",\"accountToId\":\"Id-124\",\"amount\":5000}"))
+				.andExpect(status().isBadRequest());
 	}
 
 }

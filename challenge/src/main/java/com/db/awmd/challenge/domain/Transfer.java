@@ -11,17 +11,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+import lombok.Setter;
 
 @Data
 public class Transfer {
 
 	@NotNull
 	@NotEmpty
-	private final String accountFromId;
+	private String accountFromId;
 
 	@NotNull
 	@NotEmpty
-	private final String accountToId;
+	private String accountToId;
 
 	@NotNull
 	@Min(value = 0, message = "Transfer money value must be positive.")

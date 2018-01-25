@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.TransferFieldsNullException;
 import com.db.awmd.challenge.exception.AccountNotFoundException;
 import com.db.awmd.challenge.exception.FromToAccountSameException;
 import com.db.awmd.challenge.exception.InsufficientBalanceException;
@@ -27,6 +28,18 @@ public class TransfersService {
 		String accountFromId = transfer.getAccountFromId();
 		String accountToId = transfer.getAccountToId();
 		BigDecimal amount = transfer.getAmount();
+		
+		if(accountFromId == null || ("").equals(accountFromId)) {
+			throw new TransferFieldsNullException("From Account");
+		}
+		
+		if(accountToId == null || ("").equals(accountToId)) {
+			throw new TransferFieldsNullException("To Account");
+		}
+		
+		if(amount.compareTo(new BigDecimal(0)) == 0) {
+			throw new TransferFieldsNullException("Amount");
+		}
 		
 		if(accountFromId.equals(accountToId)) {
 			throw new FromToAccountSameException();
