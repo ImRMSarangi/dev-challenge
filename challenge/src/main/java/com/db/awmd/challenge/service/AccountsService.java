@@ -1,7 +1,5 @@
 package com.db.awmd.challenge.service;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,23 +27,8 @@ public class AccountsService {
 		return this.accountsRepository.getAccount(accountId);
 	}
 	
-	public BigDecimal getAccountBalance(String accountId) {
-		Account account = this.accountsRepository.getAccount(accountId);
-		return account.getBalance();
-	}
-	
 	public void updateAccount(Account account) {
 		this.accountsRepository.updateAccount(account);
-	}
-
-	public void addBalance(String accountToId, BigDecimal amount) {
-		Account account = new Account(accountToId, getAccountBalance(accountToId).add(amount));
-		updateAccount(account);
-	}
-
-	public void deductBalance(String accountFromId, BigDecimal amount) {
-		Account account = new Account(accountFromId, getAccountBalance(accountFromId).subtract(amount));
-		updateAccount(account);
 	}
 
 }

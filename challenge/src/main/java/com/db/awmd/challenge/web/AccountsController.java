@@ -43,7 +43,7 @@ public class AccountsController {
 			return new ResponseEntity<>(daie.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>("Account id " + account.getAccountId() + " created.", HttpStatus.CREATED);
 	}
 
 	@GetMapping(path = "/{accountId}")

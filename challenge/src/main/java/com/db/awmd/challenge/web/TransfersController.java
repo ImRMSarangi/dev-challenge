@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.AccountNotFoundException;
+import com.db.awmd.challenge.exception.FromToAccountSameException;
 import com.db.awmd.challenge.exception.InsufficientBalanceException;
 import com.db.awmd.challenge.service.TransfersService;
 
@@ -38,8 +40,12 @@ public class TransfersController {
 			this.transfersService.transferMoney(transfer);
 		} catch (InsufficientBalanceException ibe) {
 			return new ResponseEntity<>(ibe.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (FromToAccountSameException ftase) {
+			return new ResponseEntity<>(ftase.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (AccountNotFoundException anfe) {
+			return new ResponseEntity<>(anfe.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>("Amount transfered.", HttpStatus.CREATED);
 	}
 }

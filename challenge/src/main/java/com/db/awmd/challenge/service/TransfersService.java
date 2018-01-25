@@ -5,31 +5,59 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.AccountNotFoundException;
+import com.db.awmd.challenge.exception.FromToAccountSameException;
 import com.db.awmd.challenge.exception.InsufficientBalanceException;
-import com.db.awmd.challenge.facade.AccountsFacade;
 
 @Service
 public class TransfersService {
 
-	private final AccountsFacade accountsFacade;
+	private final AccountsService accountsService;
+	private final NotificationService notificationService;
 
 	@Autowired
-	public TransfersService(AccountsFacade accountsFacade) {
-		this.accountsFacade = accountsFacade;
+	public TransfersService(AccountsService accountsService, EmailNotificationService notificationService) {
+		this.accountsService = accountsService;
+		this.notificationService = notificationService;
 	}
 
-	public void transferMoney(Transfer transfer) throws InsufficientBalanceException {
+	public void transferMoney(Transfer transfer) throws RuntimeException {
 		String accountFromId = transfer.getAccountFromId();
 		String accountToId = transfer.getAccountToId();
 		BigDecimal amount = transfer.getAmount();
-		BigDecimal remainingBalance = this.accountsFacade.getAccountBalance(accountFromId)
-				.subtract(amount);
-		if(remainingBalance.compareTo(BigDecimal.ZERO) < 0) {
+		
+		if(accountFromId.equals(accountToId)) {
+			throw new FromToAccountSameException();
+		}
+		
+		Account accountFrom = accountsService.getAccount(accountFromId);
+		Account accountTo = accountsService.getAccount(accountToId);
+		
+		if(null == accountFrom) {
+			throw new AccountNotFoundException(accountFromId);
+		}
+		
+		if(null == accountTo) {
+			throw new AccountNotFoundException(accountToId);
+		}
+		
+		BigDecimal remBalAccFrom = accountFrom.getBalance().subtract(amount);
+
+		if (remBalAccFrom.compareTo(BigDecimal.ZERO) < 0) {
 			throw new InsufficientBalanceException(accountFromId);
 		} else {
-			this.accountsFacade.deductBalance(accountFromId, transfer.getAmount());
-			this.accountsFacade.addBalance(accountToId, transfer.getAmount());
+			accountFrom.setBalance(remBalAccFrom);
+			accountTo.setBalance(accountTo.getBalance().add(amount));
+			
+			this.accountsService.updateAccount(accountFrom);
+			this.accountsService.updateAccount(accountTo);
+			
+			this.notificationService.notifyAboutTransfer(accountFrom, "An amount of " + amount
+					+ " has been debited from your account for a transfer made to the account id " + accountToId + ".");
+			this.notificationService.notifyAboutTransfer(accountTo, "An amount of " + amount
+					+ " has been credited to your account from the account id " + accountFromId + ".");
 		}
 	}
 
